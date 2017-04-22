@@ -16,7 +16,7 @@ class ManageDocumentPage extends React.Component {
     render() {
         return (
             <DocumentForm
-                allAuthors={[]}
+                allAuthors={this.props.authors}
                 document={this.state.document}
                 errors={this.state.errors}
             />
@@ -24,17 +24,28 @@ class ManageDocumentPage extends React.Component {
     }
 }
 
-ManageDocumentPage.PropTypes = {
-    document: PropTypes.object.isRequired
+ManageDocumentPage.propTypes = {
+    document: PropTypes.object.isRequired,
+    authors: PropTypes.array.isRequired
 };
 
 function mapStateToProps(state, ownProps) {
     let document = {id: '', watchHerf: '', title: '', authorId: '', length: '', category: ''};
-    return{
-        document: document
+
+    const authorsFormattedForDropdown = state.authors.map( author => {
+        return {
+            value: author.id,
+            text: author.firstName + ' ' + author.lastName
+        };
+    });
+
+    return {
+        document: document,
+        authors: authorsFormattedForDropdown
     };
 }
-
+// mapstatetoprops is the place where we can do any data transformation, in order to fit our model.
+//in the const as a function that we have above we do the transforamtion of the author data, to fit our model, as in selectinput from the initialState 
 function mapDispatchToProps(dispatch) {
     return {
         actions: bindActionCreators(documentActions, dispatch) //this will make all the actions available for this container component under this.props.actions
