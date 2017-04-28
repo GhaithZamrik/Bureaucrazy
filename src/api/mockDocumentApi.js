@@ -83,7 +83,7 @@ class DocumentApi {
           //The server would generate ids and watchHref's for new documents in a real app.
           //Cloning so copy returned is passed by value rather than by reference.                                                                                                                                                                                                           
           document.id = generateId(document);
-          document.watchHref = `C:/Users/RoyBo/Prototype/Bureaucrazy/src/components/PDFs/${document.id}`;
+          document.watchHref = `/Users/ghaith.zamrik/repo/Bureaucrazy/PDFS${document.id}`;
           documents.push(document);
         }
 

@@ -11,8 +11,9 @@ import './styles/styles.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 const store = configureStore();
-store.dispatch(loadDocuments());
 store.dispatch(loadAuthors());
+store.dispatch(loadDocuments());
+
 
 render(
     <Provider store={store}>
