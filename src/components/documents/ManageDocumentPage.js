@@ -16,6 +16,13 @@ class ManageDocumentPage extends React.Component {
         this.saveDocument = this.saveDocument.bind(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (this.props.document.id != nextProps.document.id) { // the condition here is to make sure that the function doesn't run automatically when react cannot tell if props has changed.
+            //Necessary to populate form when existing document is loaded directly.
+            this.setState({document: Object.assign({}, nextProps.document)});
+        }
+    } //we only weant to update state with our props when we have ended up requesting a new document. 
+
     updateDocumentState(event) {
         const field = event.target.name;
         let document = this.state.document;
@@ -49,41 +56,25 @@ ManageDocumentPage.propTypes = {
 };
 
 ManageDocumentPage.contextTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object
 };
 
-// function getDocumentById(documents, id) {
-//     const document = documents.filter(document => document.id == id);
-//     if (document.length) return document[0]; //since filter returns an array, have to grsb the first one
-//     return null;
-// }
+function getItemById(documents, id) {
+    const document = documents.filter(document => document.id == id);
+    if (document.length) return document[0]; //since filter returns an array, have to grsb the first one
+    return null;
+}
 
 function mapStateToProps(state, ownProps) {
-    // const documentId = ownProps.params.id; //form the path /
+    const documentId = ownProps.params.id; //form the path /
 
     let document = {id: '', watchHerf: '', title: '', authorId: '', length: '', category: ''};
 
-    // if (documentId) {
-    //     document = getDocumentById(state.document, documentId);
-    // }
+    if (documentId && state.documents.length > 0) {
+        document = getItemById(state.documents, documentId);
+    }
 
-    
-    let authors = [
-  {
-    id: 'job-center',
-    name: 'JobCenter'
-  },
-  {
-    id: 'Bundes-amt',
-    name: 'Bundesamt'
-  },
-  {
-    id: 'Burger-amt',
-    name: 'Burgeramt'
-  }
-];
-    
-    const authorsFormattedForDropdown = authors.map(author => {
+    const authorsFormattedForDropdown = state.authors.map(author => {
         return {
             value: author.id,
             text: author.name
@@ -97,10 +88,10 @@ function mapStateToProps(state, ownProps) {
 }
 // mapstatetoprops is the place where we can do any data transformation, in order to fit our model.
 //in the const as a function that we have above we do the transforamtion of the author data, to fit our model, as in selectinput from the initialState 
-function mapDispatchToProps() {
+function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(documentActions) //this will make all the actions available for this container component under this.props.actions
+        actions: bindActionCreators(documentActions, dispatch) //this will make all the actions available for this container component under this.props.actions
     };
 }
 
-export default connect(mapDispatchToProps, mapStateToProps)(ManageDocumentPage);
+export default connect(mapStateToProps, mapDispatchToProps)(ManageDocumentPage);
