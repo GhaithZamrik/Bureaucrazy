@@ -1,16 +1,41 @@
 import * as types from './actionTypes';
-import documentApi from '../api/mockDocumentApi';
+import DocumentApi from '../api/mockDocumentApi';
+import {beginAjaxCall, ajaxCallError} from './ajaxStatusActions';
 
 export function loadDocumentsSuccess(documents) {
-    return { type: types.LOAD_DOCUMETNS_SUCCESS, documents};
+    return { type: types.LOAD_DOCUMENTS_SUCCESS, documents};
 } // this action doesn't fire untill all documents authors have been successfully loaded, beccause it's an asynchronous call.
 
+export function updateDocumentSuccess(document) {
+    return {type: types.UPDATE_DOCUMENT_SUCCESS, document};
+}
+
+export function createDocumentSuccess(document) {
+    return {type: types.CREATE_DOCUMENT_SUCCESS, document};
+}
+
 export function loadDocuments() {
-    return function (dispatch) {
-        return documentApi.getAllDocuments().then(documents => {
+    return function(dispatch) {
+        dispatch(beginAjaxCall());
+        return DocumentApi.getAllDocuments().then(documents => {
             dispatch(loadDocumentsSuccess(documents));
         }).catch(error => {
             throw(error);
         });
     };
 }
+
+export function saveDocument(document) {            //we are passing the document here as a parameter
+    return function (dispatch, getState) {          //the optional parameter gerState is used when you are wanting
+        dispatch(beginAjaxCall()); 
+        return DocumentApi.saveDocument(document).then(savedDocument => {
+            document.id ? dispatch(updateDocumentSuccess(savedDocument)) :
+            dispatch(createDocumentSuccess(savedDocument)); //depending on whether there's an id for the document we are either updating a document or creating a document
+        }).catch(error => {
+            dispatch(ajaxCallError(error));
+            throw(error);
+        });
+    };
+}
+
+ //to access the reduc store and get a particular pieces of state, without having to pass it in as a parameter
