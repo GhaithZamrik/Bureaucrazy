@@ -1,5 +1,6 @@
 import * as types from './actionTypes';
 import DocumentApi from '../api/mockDocumentApi';
+import {beginAjaxCall, ajaxCallError} from './ajaxStatusActions';
 
 export function loadDocumentsSuccess(documents) {
     return { type: types.LOAD_DOCUMENTS_SUCCESS, documents};
@@ -15,6 +16,7 @@ export function createDocumentSuccess(document) {
 
 export function loadDocuments() {
     return function(dispatch) {
+        dispatch(beginAjaxCall());
         return DocumentApi.getAllDocuments().then(documents => {
             dispatch(loadDocumentsSuccess(documents));
         }).catch(error => {
@@ -24,11 +26,13 @@ export function loadDocuments() {
 }
 
 export function saveDocument(document) {            //we are passing the document here as a parameter
-    return function (dispatch, getState) {          //the optional parameter gerState is used when you are wanting 
+    return function (dispatch, getState) {          //the optional parameter gerState is used when you are wanting
+        dispatch(beginAjaxCall()); 
         return DocumentApi.saveDocument(document).then(savedDocument => {
             document.id ? dispatch(updateDocumentSuccess(savedDocument)) :
             dispatch(createDocumentSuccess(savedDocument)); //depending on whether there's an id for the document we are either updating a document or creating a document
         }).catch(error => {
+            dispatch(ajaxCallError(error));
             throw(error);
         });
     };

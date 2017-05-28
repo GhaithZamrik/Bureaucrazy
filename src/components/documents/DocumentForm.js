@@ -2,7 +2,7 @@ import React from 'react';
 import TextInput from '../common/TextInput';
 import SelectInput from '../common/SelectInput';
 //for testing now, lots of things has to change
-const DocumentForm = ({document, allAuthors, onSave, onChange, loading, errors}) => {
+const DocumentForm = ({document, allAuthors, onSave, onChange, saving, errors}) => {
     return (
         <form>
             <h1>Manage Document</h1>
@@ -33,8 +33,8 @@ const DocumentForm = ({document, allAuthors, onSave, onChange, loading, errors})
                 error={errors.length}/>
             <input
                 type="submit"
-                disabled={loading}
-                value={loading ? 'Saving...' : 'Save'}
+                disabled={saving}
+                value={saving ? 'Saving...' : 'Save'}
                 className="btn btn-primary"
                 onClick={onSave}/>
         </form>
@@ -46,7 +46,7 @@ DocumentForm.propTypes = {
     allAuthors: React.PropTypes.array,
     onSave: React.PropTypes.func.isRequired,
     onChange: React.PropTypes.func.isRequired,
-    loading: React.PropTypes.bool,
+    saving: React.PropTypes.bool,
     errors: React.PropTypes.object
 };
 //onChange?

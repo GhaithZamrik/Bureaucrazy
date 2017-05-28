@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import * as documentActions from '../../actions/documentActions';
 import DocumentForm from './DocumentForm';
+import toastr from 'toastr';
 
 class ManageDocumentPage extends React.Component {
     constructor(props, context) {
@@ -10,7 +11,8 @@ class ManageDocumentPage extends React.Component {
 //we need to pass down mutable state to out container component.
         this.state = {
             document: Object.assign({}, props.document),
-            errors: {}
+            errors: {},
+            saving: false
         };
         this.updateDocumentState = this.updateDocumentState.bind(this);
         this.saveDocument = this.saveDocument.bind(this);
@@ -32,7 +34,18 @@ class ManageDocumentPage extends React.Component {
     //it's gonna dispatch the action that we've just created
     saveDocument(event) {
         event.preventDefault();
-        this.props.actions.saveDocument(this.state.document);
+        this.setState({saving: true});
+        this.props.actions.saveDocument(this.state.document)
+        .then(() => this.redirect())
+        .catch( error => {
+            toastr.error(error);
+            this.setState({saving: false});
+        });
+    }
+
+    redirect() {
+        this.setState({saving: false});
+        toastr.success('Document saved');
         this.context.router.push('/documents');
     }
     
@@ -44,6 +57,7 @@ class ManageDocumentPage extends React.Component {
                 onSave={this.saveDocument}
                 document={this.state.document}
                 errors={this.state.errors}
+                saving={this.state.saving}
             />
         );
     }
